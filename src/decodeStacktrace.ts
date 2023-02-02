@@ -8,14 +8,22 @@ export interface StacktraceEntry {
         name: string | null;
         path: string;
         position: Position;
+        format: string;
     }
 }
 
 export function parseStacktraceEntry(entry: string): StacktraceEntry {
     let match: RegExpMatchArray | null;
+    let format: string;
     match = entry.match(/^(?<indent> +)at ((?<modifiers>(\S+ )*\S+) )?(?<name>\S+)? \((?<path>.+):(?<line>\d+):(?<column>\d+)\)$/);
+    format = "{indent}at {modifiers} {name} ({path}:{line}:{column})";
     if (!match) {
-        match = entry.match(/^(?<indent> +)at ((?<modifiers>(\S+ )*\S+) )?(?<path>.+):(?<line>\d+):(?<column>\d+)$/)
+        match = entry.match(/^(?<indent> +)at ((?<modifiers>(\S+ )*\S+) )?(?<path>.+):(?<line>\d+):(?<column>\d+)$/);
+        format = "{indent}at {modifiers} {path}:{line}:{column}";
+    }
+    if (!match) {
+        match = entry.match(/(?<indent> *)((?<name>\S+)@)?(?<path>.+):(?<line>\d+):(?<column>\d+)$/);
+        format = "{indent}{name}@{path}:{line}:{column}";
     }
     if (!match?.groups) {
         return {original: entry};
@@ -34,7 +42,8 @@ export function parseStacktraceEntry(entry: string): StacktraceEntry {
             modifiers,
             name,
             path,
-            position: {line, column}
+            position: {line, column},
+            format
         }
     };
 }
@@ -79,25 +88,13 @@ export function formatStacktraceEntry(entry: StacktraceEntry): string {
     if (!entry.parsed) {
         return entry.original;
     }
-    let result = ["at"];
-    if (entry.parsed.modifiers) {
-        result.push(...entry.parsed.modifiers);
-    }
-    if (entry.parsed.name) {
-        result.push(entry.parsed.name);
-    }
 
-    const position = [
-        entry.parsed.path,
-        entry.parsed.position.line,
-        entry.parsed.position.column
-    ].join(":");
-
-    if (entry.parsed.name) {
-        result.push("(" + position + ")");
-    } else {
-        result.push(position);
-    }
-
-    return " ".repeat(entry.parsed.indent) + result.join(" ");
+    let result = entry.parsed.format;
+    result = result.replaceAll("{indent}", " ".repeat(entry.parsed.indent));
+    result = result.replaceAll("{name}", entry.parsed.name ?? "");
+    result = result.replaceAll("{path}", entry.parsed.path);
+    result = result.replaceAll("{line}", entry.parsed.position.line.toString());
+    result = result.replaceAll("{column}", entry.parsed.position.column.toString());
+    result = result.replaceAll("{modifiers}", entry.parsed.modifiers.join(" "));
+    return result;
 }
