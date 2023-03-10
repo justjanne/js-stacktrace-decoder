@@ -12,20 +12,25 @@ export interface StacktraceEntry {
     }
 }
 
+const MATCH_FORMATS: [RegExp, string][] = [
+    [/^(?<indent> +)at (?<modifiers>(\S+ )*\S+) (?<name>\S+)? \((?<path>.+):(?<line>\d+):(?<column>\d+)\)$/, "{indent}at {modifiers} {name} ({path}:{line}:{column})"],
+    [/^(?<indent> +)at (?<name>\S+)? \((?<path>.+):(?<line>\d+):(?<column>\d+)\)$/, "{indent}at {name} ({path}:{line}:{column})"],
+    [/^(?<indent> +)at (?<modifiers>(\S+ )*\S+) (?<path>.+):(?<line>\d+):(?<column>\d+)$/, "{indent}at {modifiers} {path}:{line}:{column}"],
+    [/^(?<indent> +)at (?<path>.+):(?<line>\d+):(?<column>\d+)$/, "{indent}at {path}:{line}:{column}"],
+    [/(?<indent> *)((?<name>\S+)@)?(?<path>.+):(?<line>\d+):(?<column>\d+)$/, "{indent}{name}@{path}:{line}:{column}"]
+]
+
 export function parseStacktraceEntry(entry: string): StacktraceEntry {
-    let match: RegExpMatchArray | null;
-    let format: string;
-    match = entry.match(/^(?<indent> +)at ((?<modifiers>(\S+ )*\S+) )?(?<name>\S+)? \((?<path>.+):(?<line>\d+):(?<column>\d+)\)$/);
-    format = "{indent}at {modifiers} {name} ({path}:{line}:{column})";
-    if (!match) {
-        match = entry.match(/^(?<indent> +)at ((?<modifiers>(\S+ )*\S+) )?(?<path>.+):(?<line>\d+):(?<column>\d+)$/);
-        format = "{indent}at {modifiers} {path}:{line}:{column}";
+    let match: RegExpMatchArray | null = null;
+    let format: string = "";
+    for (const matchFormat of MATCH_FORMATS) {
+        match = entry.match(matchFormat[0])
+        if (match) {
+            format = matchFormat[1];
+            break;
+        }
     }
-    if (!match) {
-        match = entry.match(/(?<indent> *)((?<name>\S+)@)?(?<path>.+):(?<line>\d+):(?<column>\d+)$/);
-        format = "{indent}{name}@{path}:{line}:{column}";
-    }
-    if (!match?.groups) {
+    if (!match?.groups || !format) {
         return {original: entry};
     }
     const line = parseInt(match.groups.line);
