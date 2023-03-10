@@ -5,38 +5,46 @@ import {formatStacktraceEntry, parseStacktraceEntry, decodeStacktraceEntry, Stac
 
 const consumerCache = new Map<string, SourceMapConsumer | null>();
 
-async function getConsumer(path: string): Promise<SourceMapConsumer | null> {
-    if (consumerCache.has(path)) {
-        return consumerCache.get(path) ?? null;
-    }
+async function fetchConsumer(path: string): Promise<SourceMapConsumer | null> {
     try {
-        const url = path
-            .replace(/^vector:\/\/vector\/webapp\//, "https://app.element.io/")
-            .concat(".map");
-        const data = await fetch("http://localhost:5000/?url=" + url).then(it => it.json());
-        const consumer = await new SourceMapConsumer(data as RawSourceMap);
-        consumerCache.set(path, consumer);
-        return consumer;
+        const data = await fetch("http://localhost:5000/?url=" + path).then(it => it.json());
+        return await new SourceMapConsumer(data as RawSourceMap);
     } catch (e) {
-        console.warn("could not build source map consumer: ", e);
-        consumerCache.set(path, null);
         return null;
     }
 }
 
+async function getConsumer(path: string): Promise<SourceMapConsumer | null> {
+    if (consumerCache.has(path)) {
+        return consumerCache.get(path) ?? null;
+    }
+    const consumer = path.startsWith("vector://vector/webapp/")
+        ? await fetchConsumer(path.replace("vector://vector/webapp/", "https://develop.element.io/") + ".map")
+        ?? await fetchConsumer(path.replace("vector://vector/webapp/", "https://staging.element.io/") + ".map")
+        : await fetchConsumer(path + ".map");
+    if (consumer) {
+        consumerCache.set(path, consumer);
+    }
+    return consumer;
+}
+
 function getDomainFromStacktraceEntry(entry: StacktraceEntry): string | null {
-    if (entry.parsed) {
-        let url = new URL(entry.parsed.path.replace(/^vector:\/\/vector\/webapp\//, "https://app.element.io/"));
-        url.pathname = "";
-        url.hash = "";
-        url.search = "";
-        if (url.protocol === "webpack") {
-            return null;
-        }
-        return url.toString();
-    } else {
+    if (!entry.parsed) {
         return null;
     }
+
+    if (entry.parsed.path.startsWith("vector://")) {
+        return "vector://"
+    }
+
+    let url = new URL(entry.parsed.path);
+    url.pathname = "";
+    url.hash = "";
+    url.search = "";
+    if (url.protocol === "webpack") {
+        return null;
+    }
+    return url.toString();
 }
 
 function getDomainsFromStacktraceEntries(entries: StacktraceEntry[]): string[] {
