@@ -16,6 +16,6 @@ get the decoded stacktrace in the one on the right.
 
 Runs the app. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-### `npm proxy`
+### `npm run proxy`
 
 Runs the CORS proxy for the app. Required to use the aforementioned app.
