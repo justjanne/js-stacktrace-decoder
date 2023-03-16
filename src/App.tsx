@@ -37,14 +37,18 @@ function getDomainFromStacktraceEntry(entry: StacktraceEntry): string | null {
         return "vector://"
     }
 
-    let url = new URL(entry.parsed.path);
-    url.pathname = "";
-    url.hash = "";
-    url.search = "";
-    if (url.protocol === "webpack") {
+    try {
+        let url = new URL(entry.parsed.path);
+        url.pathname = "";
+        url.hash = "";
+        url.search = "";
+        if (url.protocol === "webpack") {
+            return null;
+        }
+        return url.toString();
+    } catch (e) {
         return null;
     }
-    return url.toString();
 }
 
 function getDomainsFromStacktraceEntries(entries: StacktraceEntry[]): string[] {
