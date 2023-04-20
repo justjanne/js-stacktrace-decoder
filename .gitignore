@@ -6,3 +6,4 @@
 .env.production.local
 
 /.idea
+/stacktrace-decoder.zip
