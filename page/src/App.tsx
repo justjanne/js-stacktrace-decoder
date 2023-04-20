@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react';
 import './App.css';
-import {RawSourceMap, SourceMapConsumer} from "source-map-js";
+import {RawSourceMap, SourceMapConsumer} from "source-map";
 import {formatStacktraceEntry, parseStacktraceEntry, decodeStacktraceEntry, StacktraceEntry} from "./decodeStacktrace";
 
 const consumerCache = new Map<string, SourceMapConsumer | null>();
@@ -14,6 +14,14 @@ async function fetchConsumer(path: string): Promise<SourceMapConsumer | null> {
     }
 }
 
+function getOrigins(domain: string): string[] {
+    if (domain.startsWith("vector://")) {
+        return ["https://develop.element.io/", "https://staging.element.io/", "https://app.element.io/"]
+    } else {
+        return [domain]
+    }
+}
+
 async function getConsumer(path: string): Promise<SourceMapConsumer | null> {
     if (consumerCache.has(path)) {
         return consumerCache.get(path) ?? null;
@@ -24,6 +32,7 @@ async function getConsumer(path: string): Promise<SourceMapConsumer | null> {
         ?? await fetchConsumer(path.replace("vector://vector/webapp/", "https://app.element.io/") + ".map")
         : await fetchConsumer(path + ".map");
     if (consumer) {
+        consumerCache.get(path)?.destroy();
         consumerCache.set(path, consumer);
     }
     return consumer;
@@ -138,8 +147,12 @@ function App() {
                         <label>
                             <input type="checkbox"
                                    checked={allowedDomains.includes(domain)}
-                                   onChange={({target: {checked}}) => {
+                                   onChange={async ({target: {checked}}) => {
                                        if (checked && !allowedDomains.includes(domain)) {
+                                           const permissions = {
+                                               origins: getOrigins(domain).map(it => ""+it+"*.js.map"),
+                                           };
+                                           await browser.permissions.request(permissions);
                                            setAllowedDomains([...allowedDomains, domain])
                                        } else if (!checked && allowedDomains.includes(domain)) {
                                            setAllowedDomains([...allowedDomains.filter(it => it !== domain)])

@@ -1,7 +1,6 @@
 {
   "name": "stacktrace-decoder",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,9 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "source-map-js": "1.0.1",
+    "@types/firefox-webext-browser": "^111.0.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "source-map": "github:mozilla/source-map"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
@@ -25,5 +25,10 @@
     "eslint-plugin-react-refresh": "^0.3.4",
     "typescript": "^5.0.2",
     "vite": "^4.3.0"
+  },
+  "overrides": {
+    "source-map": {
+      "whatwg-url": "12.0.1"
+    }
   }
 }

@@ -1,4 +1,4 @@
-import {Position, SourceMapConsumer} from "source-map-js";
+import { Position, SourceMapConsumer } from "source-map";
 
 export interface StacktraceEntry {
     original: string;
