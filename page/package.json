@@ -21,11 +21,8 @@
     "@types/react-dom": "^18.0.10"
   },
   "scripts": {
-    "proxy": "docker run -p 5000:80 -v $PWD/proxy.conf:/etc/nginx/conf.d/default.conf nginx",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "INLINE_RUNTIME_CHUNK=false BUILD_PATH='../addon/page' PUBLIC_URL='/page/' react-scripts build",
+    "test": "react-scripts test"
   },
   "eslintConfig": {
     "extends": [

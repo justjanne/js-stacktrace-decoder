@@ -7,7 +7,7 @@ const consumerCache = new Map<string, SourceMapConsumer | null>();
 
 async function fetchConsumer(path: string): Promise<SourceMapConsumer | null> {
     try {
-        const data = await fetch("http://localhost:5000/?url=" + path).then(it => it.json());
+        const data = await fetch(path).then(it => it.json());
         return await new SourceMapConsumer(data as RawSourceMap);
     } catch (e) {
         return null;
@@ -21,6 +21,7 @@ async function getConsumer(path: string): Promise<SourceMapConsumer | null> {
     const consumer = path.startsWith("vector://vector/webapp/")
         ? await fetchConsumer(path.replace("vector://vector/webapp/", "https://develop.element.io/") + ".map")
         ?? await fetchConsumer(path.replace("vector://vector/webapp/", "https://staging.element.io/") + ".map")
+        ?? await fetchConsumer(path.replace("vector://vector/webapp/", "https://app.element.io/") + ".map")
         : await fetchConsumer(path + ".map");
     if (consumer) {
         consumerCache.set(path, consumer);
@@ -106,6 +107,7 @@ function App() {
     const domains = useMemo(() => getDomainsFromStacktraceEntries(trace), [trace]);
     const [allowedDomains, setAllowedDomains] = useState<string[]>([]);
     const [consumers, setConsumers] = useState<Map<string, SourceMapConsumer | null>>(new Map());
+    const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     useEffect(() => {
         let active = true;
@@ -113,8 +115,13 @@ function App() {
         setLoading(true);
         loadConsumers(trace, allowedDomains).then(result => {
             if (active) {
+                setError("");
                 setLoading(false);
                 setConsumers(result);
+            }
+        }).catch(e => {
+            if (active) {
+                setError(e);
             }
         });
         return () => {
@@ -145,6 +152,9 @@ function App() {
                 ))}
             </ul>
             <progress style={{opacity: loading ? 1 : 0}}/>
+            { error && (
+                <p><strong>Error</strong>: {error}</p>
+            )}
             <main>
                 <textarea value={content} onChange={({target: {value}}) => setContent(value)}></textarea>
                 <textarea readOnly value={decodedTrace}/>
