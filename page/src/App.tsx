@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import './App.css';
 import {RawSourceMap, SourceMapConsumer} from "source-map-js";
 import {formatStacktraceEntry, parseStacktraceEntry, decodeStacktraceEntry, StacktraceEntry} from "./decodeStacktrace";
