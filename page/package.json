@@ -22,7 +22,8 @@
   },
   "scripts": {
     "build": "INLINE_RUNTIME_CHUNK=false BUILD_PATH='../addon/page' PUBLIC_URL='/page/' react-scripts build",
-    "test": "react-scripts test"
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
