@@ -8,5 +8,6 @@ package: build
 	cd addon; web-ext build
 .PHONY: src
 src:
-	 zip -r9 stacktrace-decoder.zip $(git ls-files)
+	rm stacktrace-decoder.zip
+	zip -r9 stacktrace-decoder.zip $(git ls-files)
 
