@@ -7,9 +7,6 @@ build: icons
 	cd page; yarn run build
 	rsync -avH --delete page/dist/ addon-firefox/page
 	rsync -avH --delete page/dist/ addon-chrome/page
-.PHONY: package
-package: build
-	cd addon; web-ext build
 .PHONY: src
 src:
 	rm stacktrace-decoder.zip
