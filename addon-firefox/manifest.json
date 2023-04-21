@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Stacktrace Decoder",
+  "version": "0.4",
+  "description": "Allows decoding minified JS stacktraces in log files",
+  "icons": {
+    "32": "icons/stacktrace-decoder.svg",
+    "48": "icons/stacktrace-decoder.svg",
+    "64": "icons/stacktrace-decoder.svg",
+    "96": "icons/stacktrace-decoder.svg",
+    "128": "icons/stacktrace-decoder.svg"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'"
+  },
+  "permissions": [],
+  "optional_permissions": [
+    "*://*/*.js.map"
+  ],
+  "action": {
+    "default_icon": "icons/stacktrace-decoder.svg",
+    "default_title": "Stacktrace Decoder"
+  },
+  "background": {
+    "scripts": [ 
+      "browser-action.js"
+    ]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "stacktrace-decoder@justjanne.de"
+    }
+  }
+}

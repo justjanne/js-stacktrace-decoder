@@ -2,6 +2,7 @@ import {useEffect, useMemo, useState} from 'react';
 import './App.css';
 import {RawSourceMap, SourceMapConsumer} from "source-map";
 import {formatStacktraceEntry, parseStacktraceEntry, decodeStacktraceEntry, StacktraceEntry} from "./decodeStacktrace";
+import browser from "webextension-polyfill";
 
 const consumerCache = new Map<string, SourceMapConsumer | null>();
 

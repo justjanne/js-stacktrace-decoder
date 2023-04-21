@@ -7,7 +7,7 @@ export default defineConfig({
   build: {
     target: "esnext",
     minify: false,
-    outDir: "../addon/page/",
+    outDir: "dist",
     rollupOptions: {
       preserveEntrySignatures: true,
       output: {
