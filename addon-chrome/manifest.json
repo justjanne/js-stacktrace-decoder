@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Stacktrace Decoder",
-  "version": "0.4",
+  "version": "0.5",
   "description": "Allows decoding minified JS stacktraces in log files",
   "icons": {
     "32": "icons/stacktrace-decoder-32.png",
