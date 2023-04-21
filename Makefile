@@ -9,8 +9,8 @@ build: icons
 	rsync -avH --delete page/dist/ addon-chrome/page
 .PHONY: src
 src:
-	rm stacktrace-decoder.zip
-	zip -r9 stacktrace-decoder.zip $(git ls-files)
+	rm stacktrace-decoder.zip || true
+	zip -r9 stacktrace-decoder.zip $$(git ls-files)
 .PHONY: icons
 icons:
 	inkscape addon-chrome/icons/stacktrace-decoder.svg --export-type=png --export-area-page --export-width=32 \
