@@ -1,7 +1,11 @@
-import {useEffect, useMemo, useState} from 'react';
-import './App.css';
+import {useEffect, useMemo, useState} from 'preact/hooks';
 import {RawSourceMap, SourceMapConsumer} from "source-map";
-import {formatStacktraceEntry, parseStacktraceEntry, decodeStacktraceEntry, StacktraceEntry} from "./decodeStacktrace";
+import {
+    decodeStacktraceEntry,
+    formatStacktraceEntry,
+    parseStacktraceEntry,
+    StacktraceEntry
+} from "./decodeStacktrace.js";
 import browser from "webextension-polyfill";
 
 const consumerCache = new Map<string, SourceMapConsumer | null>();
@@ -148,7 +152,7 @@ function App() {
                         <label>
                             <input type="checkbox"
                                    checked={allowedDomains.includes(domain)}
-                                   onChange={async ({target: {checked}}) => {
+                                   onChange={async ({currentTarget: { checked }}) => {
                                        if (checked && !allowedDomains.includes(domain)) {
                                            const permissions = {
                                                origins: getOrigins(domain).map(it => ""+it+"*.js.map"),
@@ -170,7 +174,10 @@ function App() {
                 <p><strong>Error</strong>: {error}</p>
             )}
             <main>
-                <textarea value={content} onChange={({target: {value}}) => setContent(value)}></textarea>
+                <textarea value={content}
+                          onChange={({currentTarget: {value}}) => setContent(value)}
+                          onInput={({currentTarget: {value}}) => setContent(value)}
+                ></textarea>
                 <textarea readOnly value={decodedTrace}/>
             </main>
         </div>

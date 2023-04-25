@@ -1,5 +1,5 @@
-chrome.action.onClicked.addListener(() => {
-    chrome.tabs.create({
+browser.action.onClicked.addListener(() => {
+    browser.tabs.create({
         "url": "/page/index.html"
     })
 });
