@@ -23,3 +23,5 @@ icons:
 		-o addon-chrome/icons/stacktrace-decoder-96.png
 	inkscape addon-chrome/icons/stacktrace-decoder.svg --export-type=png --export-area-page --export-width=128 \
 		-o addon-chrome/icons/stacktrace-decoder-128.png
+	inkscape addon-chrome/icons/stacktrace-decoder.svg --export-type=png --export-area=x-16:y-16 --export-width=128 \
+		-o addon-chrome/icons/stacktrace-decoder-128.png
