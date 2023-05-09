@@ -1,5 +1,8 @@
+version_firefox         :=      $(shell jq '.version' -r addon-firefox/manifest.json)
+version_chrome         :=      $(shell jq '.version' -r addon-chrome/manifest.json)
+
 .PHONY: build
-build: icons
+build: icons src
 	wget https://github.com/mozilla/source-map/raw/56c1617f138ef016b90b936a037caef0a759ed4e/lib/mappings.wasm \
  		-O addon-firefox/lib/mappings.wasm
 	wget https://github.com/mozilla/source-map/raw/56c1617f138ef016b90b936a037caef0a759ed4e/lib/mappings.wasm \
@@ -7,10 +10,16 @@ build: icons
 	cd page; yarn run build
 	rsync -avH --delete page/dist/ addon-firefox/page
 	rsync -avH --delete page/dist/ addon-chrome/page
+	mkdir -p artifacts
+	rm artifacts/addon-chrome-$(version_chrome).zip || true
+	rm artifacts/addon-firefox-$(version_firefox).zip || true
+	cd addon-chrome; zip -r9 ../artifacts/addon-chrome-$(version_chrome).zip *
+	cd addon-firefox; zip -r9 ../artifacts/addon-firefox-$(version_firefox).zip *
 .PHONY: src
 src:
-	rm stacktrace-decoder.zip || true
-	zip -r9 stacktrace-decoder.zip $$(git ls-files)
+	mkdir -p artifacts
+	rm artifacts/source-$(version_firefox).zip || true
+	zip -r9 artifacts/source-$(version_firefox).zip $$(git ls-files)
 .PHONY: icons
 icons:
 	inkscape addon-chrome/icons/stacktrace-decoder.svg --export-type=png --export-area-page --export-width=32 \

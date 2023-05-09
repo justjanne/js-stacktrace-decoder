@@ -5,6 +5,5 @@
 .env.test.local
 .env.production.local
 
-/stacktrace-decoder.zip
-
 /.idea
+/artifacts
