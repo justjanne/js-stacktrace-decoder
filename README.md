@@ -2,13 +2,12 @@
 
 ## Requirements
 
-1. You'll need web-ext `npm-install -g web-ext`
+1. Install GMake and NodeJS
 2. Run `npm install` in the page subfolder
 
 ## Build
 
-1. Run `npm run build` in the page subfolder
-2. Run `web-ext build` in the addon subfolder
+1. Run `make` in the main folder
 
 ## Dependencies
 
