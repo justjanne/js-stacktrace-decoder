@@ -21,7 +21,8 @@ async function fetchConsumer(path: string): Promise<SourceMapConsumer | null> {
 
 function getOrigins(domain: string): string[] {
     if (domain.startsWith("vector://")) {
-        return ["https://develop.element.io/", "https://staging.element.io/", "https://app.element.io/"]
+        return ["https://element-web-develop.element.io/", "https://develop.element.io/",
+            "https://staging.element.io/", "https://app.element.io/"]
     } else {
         return [domain]
     }
@@ -32,7 +33,8 @@ async function getConsumer(path: string): Promise<SourceMapConsumer | null> {
         return consumerCache.get(path) ?? null;
     }
     const consumer = path.startsWith("vector://vector/webapp/")
-        ? await fetchConsumer(path.replace("vector://vector/webapp/", "https://develop.element.io/") + ".map")
+        ? await fetchConsumer(path.replace("vector://vector/webapp/", "https://element-web-develop.element.io/") + ".map")
+        ?? await fetchConsumer(path.replace("vector://vector/webapp/", "https://develop.element.io/") + ".map")
         ?? await fetchConsumer(path.replace("vector://vector/webapp/", "https://staging.element.io/") + ".map")
         ?? await fetchConsumer(path.replace("vector://vector/webapp/", "https://app.element.io/") + ".map")
         : await fetchConsumer(path + ".map");
